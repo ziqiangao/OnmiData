@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Mono Channel Selection with processChunk</title>
+</head>
+<body>
+
+<input type="file" id="audioFile" accept="audio/*" />
+<select id="channelSelect" disabled>
+  <option value="0">Left Channel</option>
+  <option value="1">Right Channel</option>
+</select>
+<button id="playBtn" disabled>Play</button>
+
+<script>
+  const fileInput = document.getElementById('audioFile');
+  const playBtn = document.getElementById('playBtn');
+  const channelSelect = document.getElementById('channelSelect');
+
+  let audioContext;
+  let audioBuffer;
+  let sourceNode;
+  let processorNode;
+
+  let offset = 0;
+  let isPlaying = false;
+
+  // This variable controls which channel is processed and played
+  let selectedChannel = 0;
+
+  fileInput.addEventListener('change', async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    if (audioContext) {
+      await audioContext.close();
+    }
+
+    audioContext = new AudioContext();
+
+    const arrayBuffer = await file.arrayBuffer();
+    audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+    playBtn.disabled = false;
+    channelSelect.disabled = audioBuffer.numberOfChannels < 2;
+
+    // Set default selected channel to left
+    selectedChannel = 0;
+    channelSelect.value = '0';
+
+    offset = 0;
+  });
+
+  // Update selectedChannel whenever user changes the select box,
+  // so processChunk always gets the current channel's samples
+  channelSelect.addEventListener('change', () => {
+    selectedChannel = parseInt(channelSelect.value, 10);
+  });
+
+  playBtn.addEventListener('click', () => {
+    if (!audioBuffer || isPlaying) return;
+
+    if (sourceNode) {
+      sourceNode.disconnect();
+    }
+    if (processorNode) {
+      processorNode.disconnect();
+    }
+
+    sourceNode = audioContext.createBufferSource();
+    sourceNode.buffer = audioBuffer;
+
+    const bufferSize = 4096;
+    processorNode = audioContext.createScriptProcessor(bufferSize, 1, 1);
+
+    offset = 0;
+    isPlaying = true;
+
+    processorNode.onaudioprocess = (event) => {
+      const outputBuffer = event.outputBuffer;
+      const chunkLength = outputBuffer.length;
+
+      if (offset >= audioBuffer.length) {
+        sourceNode.stop();
+        processorNode.disconnect();
+        sourceNode.disconnect();
+        playBtn.disabled = false;
+        isPlaying = false;
+        return;
+      }
+
+      // Get samples of the currently selected channel only
+      const inputData = audioBuffer.getChannelData(selectedChannel);
+
+      const chunkSamples = new Float32Array(chunkLength);
+      const outputData = outputBuffer.getChannelData(0);
+
+      for (let i = 0; i < chunkLength; i++) {
+        const sampleIndex = offset + i;
+        if (sampleIndex < inputData.length) {
+          chunkSamples[i] = inputData[sampleIndex];
+        } else {
+          chunkSamples[i] = 0;
+        }
+      }
+
+      // Pass the samples of the selected channel to processChunk
+      const processedSamples = processChunk(chunkSamples, audioContext);
+
+      // Fill output buffer with processed samples
+      for (let i = 0; i < chunkLength; i++) {
+        outputData[i] = processedSamples[i];
+      }
+
+      offset += chunkLength;
+    };
+
+    sourceNode.connect(processorNode);
+    processorNode.connect(audioContext.destination);
+
+    sourceNode.start();
+    playBtn.disabled = true;
+  });
+</script>
+<script src="processer.js"></script>
+</body>
+</html>

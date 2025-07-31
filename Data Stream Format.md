@@ -7,7 +7,7 @@ The Following Are Signals For the Decoder
 - 1 Pulldown Click: Stop & Process
 - 2 Pullup Clicks: Disable Reader and Unmute
 
-Bits are encoded in a special way, which is unknown
+Bits are encoded with Manchester and FSK Encoding, where High-Low Freq is 1 and Low-High Freq is 0
 
 When the Reader is enabled and reading, there cannot be any other audio clips
 
