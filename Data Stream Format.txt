@@ -1,0 +1,11 @@
+Data Stream Format For OMNI ENTITAMENT SYSTEM
+
+Data Streams Are Encoded as FSK
+
+2 Pulldown Clicks: Enable Reader
+1 Pullup Click: Start Reading
+1 Pulldown Click: Stop & Process
+2 Pullup Clicks: Disable Reader
+
+Baud & Freq Is Automaticly detected
+Initial Pattern 100001100001101010101010100 is used to determine baud and frequencies
