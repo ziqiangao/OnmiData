@@ -1,4 +1,3 @@
-
 /**
  * Processes a chunk of mono audio samples, detecting clicks.
  * @param {Float32Array} samples - Mono audio samples chunk

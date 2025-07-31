@@ -9,6 +9,5 @@ Visit `Data Stream Format.md` To contribute and read
 
 The Following Needs doing
 
-- Document the Encoding
 - Document Opcodes
-- Make tools to make and decode games
+- Get Decoder Working
