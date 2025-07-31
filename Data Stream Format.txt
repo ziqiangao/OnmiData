@@ -1,4 +1,4 @@
-Data Stream Format For OMNI ENTITAMENT SYSTEM
+Data Stream Format For The Omni Entertainment System
 
 Data Streams Are Encoded as FSK
 
