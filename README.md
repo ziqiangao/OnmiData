@@ -3,7 +3,7 @@
 
 This project aims to document the inner workings of the Omni Entertainment System.
 
-Omni Entertainment System was made in the 1980's by MB Electronics. It was a mostly forgotten system, Techmoan and others have archived carts, but left no documentation for this system
+Omni Entertainment System was made in the 1980's by MB Electronics. It was a mostly forgotten system, Some have archived carts, but left no documentation for this system apart from Techmoan's Video
 
 Visit `Data Stream Format.md` To contribute and read
 
